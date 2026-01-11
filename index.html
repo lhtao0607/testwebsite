@@ -2,16 +2,23 @@
 <html>
 <head>
   <title>My Website</title>
+
   <style>
+    body {
+      text-align: center;
+      font-family: Arial, sans-serif;
+    }
+
     canvas {
-      background: white;
+      background: #222;
       display: block;
       margin: 20px auto;
+      border: 2px solid white;
     }
   </style>
 </head>
-<body style="background-color:DodgerBlue">
-  
+
+<body>
 
   <h1>Hello, Evan and Mason!</h1>
   <p>This site is hosted on GitHub Pages.</p>
@@ -22,7 +29,7 @@
 
   <br><br>
 
-  <!-- Image section -->
+  <!-- PS5 Image -->
   <img
     src="ps5.jpg"
     id="PS5"
@@ -36,14 +43,16 @@
   <button onclick="hideImage()">Hide Image</button>
   <button onclick="showImage()">Show Image</button>
 
-  <!-- Pong Game -->
-  <h2 style="text-align:center;">Ping Pong Game</h2>
-  <p style="text-align:center;">Use ↑ and ↓ keys</p>
+  <hr>
+
+  <!-- Tank Game -->
+  <h2>Tank Game 🚓</h2>
+  <p>Use Arrow Keys to Move • Space to Shoot</p>
 
   <canvas id="game" width="600" height="400"></canvas>
 
   <script>
-    // Image functions
+    /* IMAGE FUNCTIONS */
     function hideImage() {
       document.getElementById("PS5").style.display = "none";
     }
@@ -52,69 +61,89 @@
       document.getElementById("PS5").style.display = "block";
     }
 
-    // Pong game
+    /* TANK GAME */
     const canvas = document.getElementById("game");
     const ctx = canvas.getContext("2d");
 
-    let paddleY = 150;
-    const paddleHeight = 80;
-    const paddleWidth = 10;
+    const tank = {
+      x: 280,
+      y: 180,
+      size: 30,
+      speed: 4
+    };
 
-    let ballX = 300;
-    let ballY = 200;
-    let ballSpeedX = 4;
-    let ballSpeedY = 4;
-    const ballSize = 10;
+    const enemy = {
+      x: 100,
+      y: 100,
+      size: 30
+    };
 
-    // Keyboard controls
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "ArrowUp" && paddleY > 0) paddleY -= 20;
-      if (e.key === "ArrowDown" && paddleY < canvas.height - paddleHeight) paddleY += 20;
+    let bullets = [];
+    const keys = {};
+
+    document.addEventListener("keydown", e => {
+      keys[e.key] = true;
+
+      if (e.key === " ") {
+        bullets.push({
+          x: tank.x + tank.size / 2 - 3,
+          y: tank.y,
+          speed: 6
+        });
+      }
     });
+
+    document.addEventListener("keyup", e => {
+      keys[e.key] = false;
+    });
+
+    function update() {
+      if (keys["ArrowUp"] && tank.y > 0) tank.y -= tank.speed;
+      if (keys["ArrowDown"] && tank.y < canvas.height - tank.size) tank.y += tank.speed;
+      if (keys["ArrowLeft"] && tank.x > 0) tank.x -= tank.speed;
+      if (keys["ArrowRight"] && tank.x < canvas.width - tank.size) tank.x += tank.speed;
+
+      bullets.forEach(b => b.y -= b.speed);
+
+      bullets = bullets.filter(b => {
+        if (
+          b.x > enemy.x &&
+          b.x < enemy.x + enemy.size &&
+          b.y > enemy.y &&
+          b.y < enemy.y + enemy.size
+        ) {
+          enemy.x = Math.random() * (canvas.width - enemy.size);
+          enemy.y = Math.random() * (canvas.height - enemy.size);
+          return false;
+        }
+        return b.y > 0;
+      });
+    }
 
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Paddle
+      // Tank
       ctx.fillStyle = "green";
-      ctx.fillRect(20, paddleY, paddleWidth, paddleHeight);
+      ctx.fillRect(tank.x, tank.y, tank.size, tank.size);
+      ctx.fillRect(tank.x + 12, tank.y - 10, 6, 10);
 
-      // Ball
-      ctx.fillRect(ballX, ballY, ballSize, ballSize);
+      // Enemy
+      ctx.fillStyle = "red";
+      ctx.fillRect(enemy.x, enemy.y, enemy.size, enemy.size);
 
-      // Move ball
-      ballX += ballSpeedX;
-      ballY += ballSpeedY;
-
-      // Bounce top/bottom
-      if (ballY <= 0 || ballY >= canvas.height - ballSize) {
-        ballSpeedY *= -1;
-      }
-
-      // Paddle collision
-      if (
-        ballX <= 30 &&
-        ballY > paddleY &&
-        ballY < paddleY + paddleHeight
-      ) {
-        ballSpeedX *= -1;
-      }
-
-      // Reset if missed
-      if (ballX < 0) {
-        ballX = 300;
-        ballY = 200;
-      }
-
-      // Bounce right wall
-      if (ballX > canvas.width - ballSize) {
-        ballSpeedX *= -1;
-      }
-
-      requestAnimationFrame(draw);
+      // Bullets
+      ctx.fillStyle = "yellow";
+      bullets.forEach(b => ctx.fillRect(b.x, b.y, 6, 10));
     }
 
-    draw();
+    function loop() {
+      update();
+      draw();
+      requestAnimationFrame(loop);
+    }
+
+    loop();
   </script>
 
 </body>
