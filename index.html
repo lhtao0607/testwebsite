@@ -4,25 +4,38 @@
   <title>My Website</title>
 </head>
 <body>
+
   <h1>Hello, Evan and Mason!</h1>
   <p>This site is hosted on GitHub Pages.</p>
-  <button onclick="window.location.href='https://www.crazygames.com'">Play Games</button>
-  
-  
-  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRrVEh4R8Bkt7nukP0qvTKEzXTilwHu76kIgg&s" id= "PS5" alt="PS5" width="500" height="333">
-   <button onclick="hideImage()">Hide Image</button>
+
+  <button onclick="window.location.href='https://www.crazygames.com'">
+    Play Games
+  </button>
+
+  <br><br>
+
+  <img
+    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRrVEh4R8Bkt7nukP0qvTKEzXTilwHu76kIgg&s"
+    id="PS5"
+    alt="PS5"
+    width="500"
+    height="333"
+  >
+
+  <br><br>
+
+  <button onclick="hideImage()">Hide Image</button>
+  <button onclick="showImage()">Show Image</button>
 
   <script>
     function hideImage() {
       document.getElementById("PS5").style.display = "none";
     }
-  </script>
-     <button onclick="showImage()">Show Image</button>
 
-  <script>
-    function hideImage() {
-      document.getElementById("PS5").style.display = "none";
+    function showImage() {
+      document.getElementById("PS5").style.display = "block";
     }
   </script>
+
 </body>
 </html>
